@@ -1,0 +1,58 @@
+import { Refine } from "@refinedev/core";
+
+export const resources = [
+  {name: "Control ID"},
+
+      { name: "Dashboard", icon: "📊" },
+      { name: "Monitoramento de Acessos", icon: "🚪" },
+      { name: "Monitoramento de Veículos", icon: "🚗" },
+      { name: "Monitoramento de Alarmes", icon: "🚨" },
+      { name: "Planta Baixa", icon: "🏢" },
+ 
+      {name: "Cadastros"},
+
+      {
+        name: "Pessoas",
+        list: "/pessoas",
+        create: "/pessoas/create",
+        edit: "/pessoas/edit/:id",
+        show: "/pessoas/show/:id",
+        icon: "👤",
+         meta: { parent: "Cadastros", canDelete: true },
+      },
+      {
+        name: "Visitantes",
+        list: "/visitantes",
+        create: "/visitantes/create",
+        edit: "/visitantes/edit/:id",
+        show: "/visitantes/show/:id",
+        icon: "👥",
+        meta: { parent: "Cadastros", canDelete: true },
+      },
+      {
+        name: "Grupos",
+        list: "/grupos",
+        create: "/grupos/create",
+        edit: "/grupos/edit/:id",
+        show: "/grupos/show/:id",
+        icon: "👥",
+        meta: { canDelete: true },
+        meta: { parent: "Cadastros", canDelete: true },
+      },
+      {
+        name: "companies",
+        list: "/companies",
+        create: "/companies/create",
+        edit: "/companies/edit/:id",
+        show: "/companies/show/:id",
+        icon: "🏢",
+        meta: { parent: "Cadastros", canDelete: true },
+      },
+      { name: "Tipos de Créditos", icon: "💳" },
+      { name: "Gerenciamento de Créditos", icon: "💳" },
+      { name: "Cartões Provisórios", icon: "💳" },
+      { name: "Veículos", icon: "🚗" },
+      { name: "Estacionamentos", icon: "🚗" },
+      { name: "Acesso a Relatórios", icon: "📈" },
+      {name: "Configurações},
+];
