@@ -1,0 +1,5 @@
+
+> control-id-front@0.1.0 build
+> tsc && refine build
+
+src/pages/areas/edit.tsx(56,97): error TS1005: '...' expected.

@@ -106,9 +106,9 @@ const DocumentSection = () => {
                         control={control}
                         render={({ field }) => (
                             <DatePicker
-                                label="Data de Emissão do CPF"
                                 {...field}
-                                renderInput={(params) => <TextField {...params} fullWidth />}
+                                label="Data de Emissão do CPF"
+                                slotProps={{ textField: { fullWidth: true } }}
                             />
                         )}
                     />
@@ -138,9 +138,9 @@ const DocumentSection = () => {
                         control={control}
                         render={({ field }) => (
                             <DatePicker
-                                label="Data de Emissão do RG"
                                 {...field}
-                                renderInput={(params) => <TextField {...params} fullWidth />}
+                                label="Data de Emissão do RG"
+                                slotProps={{ textField: { fullWidth: true } }}
                             />
                         )}
                     />

@@ -56,7 +56,7 @@ const GeralSectionEdit: React.FC<{ peopleData: any }> = ({ peopleData }) => {
                     <TextField
                         {...register("iDSecurePassword", { required: "Senha de Acesso ao iDSecure é obrigatória" })}
                         error={!!errors.iDSecurePassword}
-                        helperText={errors.iDSecurePassword?.message}
+                        helperText={String(errors.iDSecurePassword?.message || "")}
                         margin="normal"
                         fullWidth
                         InputLabelProps={{ shrink: true }}
@@ -112,7 +112,7 @@ const GeralSectionEdit: React.FC<{ peopleData: any }> = ({ peopleData }) => {
                     <TextField
                         {...register("accessProfile", { required: "Perfil de Acesso é obrigatório" })}
                         error={!!errors.accessProfile}
-                        helperText={errors.accessProfile?.message}
+                        helperText={String(errors.accessProfile?.message || "")}
                         margin="normal"
                         fullWidth
                         InputLabelProps={{ shrink: true }}

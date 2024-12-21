@@ -1,10 +1,17 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { Grid, Typography, TextField, MenuItem } from '@mui/material';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { Controller, useFormContext } from 'react-hook-form';
 
-const ControlledDatePicker = ({ name, label }) => {
+// Props para ControlledDatePicker
+interface ControlledDatePickerProps {
+  name: string;
+  label: string;
+}
+
+// Componente ControlledDatePicker com tipagem
+const ControlledDatePicker: React.FC<ControlledDatePickerProps> = ({ name, label }) => {
   const { control } = useFormContext();
 
   return (
@@ -29,9 +36,25 @@ const ControlledDatePicker = ({ name, label }) => {
       )}
     />
   );
-};
+}
 
-const ControlledTextField = ({ name, label, multiline = false, select = false, children }) => {
+// Props para ControlledTextField
+interface ControlledTextFieldProps {
+  name: string;
+  label: string;
+  multiline?: boolean;
+  select?: boolean;
+  children?: ReactNode;
+}
+
+// Componente ControlledTextField com tipagem
+const ControlledTextField: React.FC<ControlledTextFieldProps> = ({
+  name,
+  label,
+  multiline = false,
+  select = false,
+  children,
+}) => {
   const { control } = useFormContext();
 
   return (
@@ -55,8 +78,9 @@ const ControlledTextField = ({ name, label, multiline = false, select = false, c
       )}
     />
   );
-};
+}
 
+// Componente principal AddInfoSection
 const AddInfoSection: React.FC = () => {
   return (
     <Grid container spacing={2}>
@@ -141,8 +165,6 @@ const AddInfoSection: React.FC = () => {
         <ControlledTextField name="cpf" label="CPF" />
       </Grid>
 
-
-      
       <Grid item xs={12}>
         <ControlledTextField name="observations" label="Observações" multiline />
       </Grid>

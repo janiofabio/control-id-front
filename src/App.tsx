@@ -1,8 +1,6 @@
 import { Authenticated, GitHubBanner, Refine } from "@refinedev/core";
 import { DevtoolsPanel, DevtoolsProvider } from "@refinedev/devtools";
 import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
-//import { MuiInferencer } from "@pankod/refine-inferencer/mui";
-import { MuiListInferencer } from "@refinedev/inferencer/dist/mui";
 
 import { resources } from "./resources/resources";
 
@@ -30,19 +28,6 @@ import { API_URL } from "./constants";
 import { ColorModeContextProvider } from "./contexts/color-mode";
 
 import { Dashboard } from "./pages/dashboards";
-
-import {
-  BlogPostCreate,
-  BlogPostEdit,
-  BlogPostList,
-  BlogPostShow,
-} from "./pages/blog-posts";
-import {
-  CategoryCreate,
-  CategoryEdit,
-  CategoryList,
-  CategoryShow,
-} from "./pages/categories";
 
 import {
   PersonCreate,
@@ -94,8 +79,6 @@ import {
 } from "./pages/schedules";
 
 function App() {
-  console.log("1 - App component rendered");
-
   return (
     <BrowserRouter>
       <GitHubBanner />
@@ -126,34 +109,16 @@ function App() {
                         key="authenticated-inner"
                         fallback={<CatchAllNavigate to="/login" />}
                       >
-                        {console.log("2 - Authenticated inner rendered")}
-
-                        <ThemedLayoutV2 Header={Header}>
-                          {console.log("3 - ThemedLayoutV2 with Header rendered")}
-                          <Outlet />
-                        </ThemedLayoutV2>
-
-
+                          <ThemedLayoutV2 Header={Header}>
+                            <Outlet />
+                          </ThemedLayoutV2>
                       </Authenticated>
                     }
                   >
-                    {console.log("4 - Main routes rendered")}
                     <Route
                       index
                       element={<NavigateToResource resource="Dashboard" />}
                     />
-                    <Route path="/blog-posts">
-                      <Route index element={<BlogPostList />} />
-                      <Route path="create" element={<BlogPostCreate />} />
-                      <Route path="edit/:id" element={<BlogPostEdit />} />
-                      <Route path="show/:id" element={<BlogPostShow />} />
-                    </Route>
-                    <Route path="/categories">
-                      <Route index element={<CategoryList />} />
-                      <Route path="create" element={<CategoryCreate />} />
-                      <Route path="edit/:id" element={<CategoryEdit />} />
-                      <Route path="show/:id" element={<CategoryShow />} />
-                    </Route>
                     <Route path="/people">
                       <Route index element={<PersonList />} />
                       <Route path="create" element={<PersonCreate />} />
@@ -207,12 +172,10 @@ function App() {
                         key="authenticated-outer"
                         fallback={<Outlet />}
                       >
-                        {console.log("5 - Authenticated outer rendered")}
                         <NavigateToResource />
                       </Authenticated>
                     }
                   >
-                    {console.log("6 - Auth routes rendered")}
                     <Route
                       path="/login"
                       element={
@@ -239,17 +202,12 @@ function App() {
                 </Routes>
 
                 <RefineKbar />
-                {console.log("7 - RefineKbar rendered")}
                 <UnsavedChangesNotifier />
-                {console.log("8 - UnsavedChangesNotifier rendered")}
                 <DocumentTitleHandler />
-                {console.log("9 - DocumentTitleHandler rendered")}
               </Refine>
               <DevtoolsPanel />
-              {console.log("10 - DevtoolsPanel rendered")}
             </DevtoolsProvider>
           </RefineSnackbarProvider>
-
         </ColorModeContextProvider>
       </RefineKbarProvider>
     </BrowserRouter>

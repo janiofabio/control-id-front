@@ -65,10 +65,7 @@ const DocumentSectionEdit: React.FC<DocumentSectionEditProps> = ({ peopleData })
 
     const renderFileActions = (fieldName: string, file: string | null, fileName: string) => (
         <Box display="flex" alignItems="center" gap={2}>
-            <Button
-                variant="contained"
-                component="label"
-            >
+            <Button variant="contained" component="label">
                 {file ? "Trocar" : "Adicionar"}
                 <input
                     type="file"
@@ -109,12 +106,7 @@ const DocumentSectionEdit: React.FC<DocumentSectionEditProps> = ({ peopleData })
                         name="cpf_number"
                         control={control}
                         render={({ field }) => (
-                            <TextField
-                                {...field}
-                                label="Número do CPF"
-                                fullWidth
-                                variant="outlined"
-                            />
+                            <TextField {...field} label="Número do CPF" fullWidth variant="outlined" />
                         )}
                     />
                 </Grid>
@@ -125,9 +117,9 @@ const DocumentSectionEdit: React.FC<DocumentSectionEditProps> = ({ peopleData })
                         render={({ field }) => (
                             <DatePicker
                                 label="Data de Emissão do CPF"
-                                value={field.value}
+                                value={field.value || null}
                                 onChange={(newValue) => field.onChange(newValue)}
-                                renderInput={(params) => <TextField {...params} fullWidth />}
+                                slotProps={{ textField: { fullWidth: true } }}
                             />
                         )}
                     />
@@ -142,12 +134,7 @@ const DocumentSectionEdit: React.FC<DocumentSectionEditProps> = ({ peopleData })
                         name="rg_number"
                         control={control}
                         render={({ field }) => (
-                            <TextField
-                                {...field}
-                                label="Número do RG"
-                                fullWidth
-                                variant="outlined"
-                            />
+                            <TextField {...field} label="Número do RG" fullWidth variant="outlined" />
                         )}
                     />
                 </Grid>
@@ -158,9 +145,9 @@ const DocumentSectionEdit: React.FC<DocumentSectionEditProps> = ({ peopleData })
                         render={({ field }) => (
                             <DatePicker
                                 label="Data de Emissão do RG"
-                                value={field.value}
+                                value={field.value || null}
                                 onChange={(newValue) => field.onChange(newValue)}
-                                renderInput={(params) => <TextField {...params} fullWidth />}
+                                slotProps={{ textField: { fullWidth: true } }}
                             />
                         )}
                     />

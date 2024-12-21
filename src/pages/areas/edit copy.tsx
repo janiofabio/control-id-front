@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { useTranslate, useCreate, useNotification, useNavigation } from "@refinedev/core";
-import { Create } from "@refinedev/mui";
-import { Controller } from "react-hook-form";
+import { useTranslate, useUpdate, useNotification, useNavigation, useShow, OpenNotificationParams } from "@refinedev/core";
+import { Edit } from "@refinedev/mui";
+import { Controller, UseFormProps, SubmitHandler } from "react-hook-form";
 import { useForm } from "@refinedev/react-hook-form";
 import {
   Box,
@@ -16,39 +16,68 @@ import {
   List,
   ListItem,
   ListItemText,
+  Divider,
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import { PhotoCamera, Add, Remove } from "@mui/icons-material";
 import { useHistory } from "../../hooks/useHistory";
+import { BaseRecord, HttpError } from "@refinedev/core";
 
-export const AreaCreate: React.FC = () => {
+interface AreaFormData {
+  name: string;
+  description: string;
+  externalArea: boolean;
+  informZoneCapacity: boolean;
+  capacity: number;
+  photoArea: string;
+  historico: any[];
+}
+
+export const AreaEdit: React.FC = () => {
   const translate = useTranslate();
-  const { mutate: createArea } = useCreate();
+  const { mutate: updateArea } = useUpdate();
   const { open } = useNotification();
   const { push } = useNavigation();
-  const { addHistoryEntry, isLoadingUser } = useHistory();
-  const { control, handleSubmit, watch, setValue } = useForm({
-    defaultValues: {
-      name: "",
-      description: "",
-      externalArea: false,
-      informZoneCapacity: false,
-      capacity: 0,
-      photoArea: "",
-      historico: [],
+  const { queryResult } = useShow();
+  const { data: areaData, isLoading: isLoadingArea } = queryResult || {};
+  const { addHistoryEntry, formatHistoryEntry, isLoadingUser } = useHistory();
+
+  const {
+    refineCore: { onFinish, formLoading },
+    saveButtonProps,
+    register,
+    control,
+    handleSubmit,
+    formState: { errors },
+    watch,
+    setValue,
+  } = useForm<AreaFormData>({
+    refineCoreProps: {
+      resource: "areas",
+      action: "edit",
+      id: areaData?.data.id,
     },
-  });
+  } as UseFormProps<AreaFormData>);
 
   const [isUploadLoading, setIsUploadLoading] = useState(false);
   const watchControlarCapacidade = watch("informZoneCapacity");
 
-  const converterParaBase64 = (arquivo: File): Promise<string> =>
-    new Promise((resolve, reject) => {
+  const safeOpen = (params: OpenNotificationParams) => {
+    if (open) {
+      open(params);
+    } else {
+      console.warn('Função de notificação não está disponível');
+    }
+  };
+
+  const converterParaBase64 = (arquivo: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
       const leitor = new FileReader();
       leitor.readAsDataURL(arquivo);
       leitor.onload = () => resolve(leitor.result as string);
       leitor.onerror = (erro) => reject(erro);
     });
+  };
 
   const handleMudancaArquivo = async (evento: React.ChangeEvent<HTMLInputElement>) => {
     try {
@@ -60,7 +89,7 @@ export const AreaCreate: React.FC = () => {
       }
     } catch (erro) {
       console.error("Falha no upload", erro);
-      open?.({
+      safeOpen({
         type: "error",
         message: "Erro ao fazer upload do arquivo. Por favor, tente novamente.",
       });
@@ -69,67 +98,61 @@ export const AreaCreate: React.FC = () => {
     }
   };
 
-  const onSubmit = async (dados: any) => {
-    if (!addHistoryEntry || !createArea || !open) {
-      console.error("Funções necessárias não estão disponíveis.");
-      open?.({
-        type: "error",
-        message: "Erro interno. Por favor, tente novamente.",
-      });
-      return;
-    }
-
-    if (isLoadingUser) {
-      open({
-        type: "error",
-        message: "Informações do usuário ainda não estão disponíveis. Por favor, tente novamente.",
-      });
-      return;
-    }
-
+  const onSubmit = async (data: AreaFormData) => {
     try {
-      const novoHistorico = addHistoryEntry([], "criação", "área");
-      const dadosArea = { ...dados, historico: novoHistorico };
+      if (isLoadingUser || isLoadingArea) {
+        safeOpen({
+          type: "error",
+          message: "Carregando informações. Por favor, tente novamente em alguns segundos.",
+        });
+        return;
+      }
 
-      createArea(
-        {
-          resource: "areas",
-          values: dadosArea,
-        },
-        {
-          onSuccess: () => {
-            open({
-              type: "success",
-              message: "Área criada com sucesso!",
-            });
-            push?.("/areas");
-          },
-          onError: (erro) => {
-            console.error("Erro ao salvar área:", erro);
-            open({
-              type: "error",
-              message: "Erro ao salvar área. Por favor, tente novamente.",
-            });
-          },
-        }
-      );
+      const novoHistorico = addHistoryEntry(data.historico, 'edição', 'área');
+      const dadosAtualizados = {
+        ...data,
+        historico: novoHistorico,
+      };
+
+      await onFinish(dadosAtualizados);
+
+      safeOpen({
+        type: "success",
+        message: "Área atualizada com sucesso!",
+      });
+      push("/areas");
     } catch (erro) {
       console.error("Erro ao processar solicitação:", erro);
-      open?.({
+      safeOpen({
         type: "error",
         message: "Erro ao processar solicitação. Por favor, tente novamente.",
       });
     }
   };
 
+  if (isLoadingArea) {
+    return <div>Carregando...</div>;
+  }
+
   return (
-    <Create saveButtonProps={{ onClick: handleSubmit(onSubmit) }}>
+    <Edit saveButtonProps={saveButtonProps}>
       <Box sx={{ padding: 2 }}>
+        <Typography variant="h6" gutterBottom>
+          {translate("Editar Área")}
+        </Typography>
         <Grid container spacing={2}>
           <Grid item xs={12} md={3}>
             <Card>
               <CardContent>
-                <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    height: "100%",
+                  }}
+                >
                   <Controller
                     name="photoArea"
                     control={control}
@@ -181,7 +204,7 @@ export const AreaCreate: React.FC = () => {
                       component="span"
                       sx={{ mt: 2 }}
                     >
-                      Selecionar Arquivo
+                      Alterar Foto
                     </LoadingButton>
                   </label>
                 </Box>
@@ -248,7 +271,7 @@ export const AreaCreate: React.FC = () => {
                       rules={{ min: 0 }}
                       render={({ field: { onChange, value } }) => (
                         <Box sx={{ display: "flex", alignItems: "center" }}>
-                          <IconButton onClick={() => onChange(Math.max(0, value - 1))}>
+                          <IconButton onClick={() => onChange(Math.max(0, Number(value) - 1))}>
                             <Remove />
                           </IconButton>
                           <TextField
@@ -258,7 +281,7 @@ export const AreaCreate: React.FC = () => {
                             type="number"
                             InputProps={{ inputProps: { min: 0 } }}
                           />
-                          <IconButton onClick={() => onChange(value + 1)}>
+                          <IconButton onClick={() => onChange(Number(value) + 1)}>
                             <Add />
                           </IconButton>
                         </Box>
@@ -277,14 +300,19 @@ export const AreaCreate: React.FC = () => {
           <Card>
             <CardContent>
               <List>
-                <ListItem>
-                  <ListItemText primary="O histórico será criado após salvar a área." />
-                </ListItem>
+                {areaData?.data.historico?.map((item, index) => (
+                  <React.Fragment key={index}>
+                    <ListItem>
+                      <ListItemText primary={formatHistoryEntry(item)} />
+                    </ListItem>
+                    {index < areaData.data.historico.length - 1 && <Divider />}
+                  </React.Fragment>
+                ))}
               </List>
             </CardContent>
           </Card>
         </Box>
       </Box>
-    </Create>
+    </Edit>
   );
 };

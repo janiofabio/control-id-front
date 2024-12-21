@@ -2,35 +2,49 @@ import React from 'react';
 import { Grid, Typography, TextField, MenuItem } from '@mui/material';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { Controller, useFormContext } from 'react-hook-form';
-import { FieldValues, FieldErrors } from 'react-hook-form';
+import { Controller, useFormContext, FieldErrors } from 'react-hook-form';
 
 interface AddInfoSectionProps {
-  errors: FieldErrors<FieldValues>;
-  peopleData: any; // Tipo correto baseado nos dados de peopleData
+  errors: FieldErrors;
+  peopleData: {
+    releasePeriodStart?: string;
+    releasePeriodEnd?: string;
+    occupation?: string;
+    admissionDate?: string;
+    mobileNumber?: string;
+    extensionNumber?: string;
+    socialName?: string;
+    registryName?: string;
+    fatherName?: string;
+    motherName?: string;
+    birthDate?: string;
+    gender?: string;
+    maritalStatus?: string;
+    nationality?: string;
+    naturalness?: string;
+    rg?: string;
+    cpf?: string;
+    passport?: string;
+  };
 }
 
 const AddInfoSectionEdit: React.FC<AddInfoSectionProps> = ({ errors, peopleData }) => {
-  const { control, setValue } = useFormContext<FieldValues>();
+  const { control, setValue } = useFormContext();
 
-  // Função para converter string ISO 8601 para objeto Date
-  const parseDate = (dateString: string | null) => {
-    return dateString ? new Date(dateString) : null;
-  };
+  const parseDate = (dateString?: string) => (dateString ? new Date(dateString) : null);
 
-  // Valores padrão que vêm de peopleData, caso estejam disponíveis
   const defaultValues = {
-    releasePeriodStart: parseDate(peopleData?.releasePeriodStart || null),
-    releasePeriodEnd: parseDate(peopleData?.releasePeriodEnd || null),
+    releasePeriodStart: parseDate(peopleData?.releasePeriodStart),
+    releasePeriodEnd: parseDate(peopleData?.releasePeriodEnd),
     occupation: peopleData?.occupation || '',
-    admissionDate: parseDate(peopleData?.admissionDate || null),
+    admissionDate: parseDate(peopleData?.admissionDate),
     mobileNumber: peopleData?.mobileNumber || '',
     extensionNumber: peopleData?.extensionNumber || '',
     socialName: peopleData?.socialName || '',
     registryName: peopleData?.registryName || '',
     fatherName: peopleData?.fatherName || '',
     motherName: peopleData?.motherName || '',
-    birthDate: parseDate(peopleData?.birthDate || null),
+    birthDate: parseDate(peopleData?.birthDate),
     gender: peopleData?.gender || '',
     maritalStatus: peopleData?.maritalStatus || '',
     nationality: peopleData?.nationality || '',
@@ -59,14 +73,13 @@ const AddInfoSectionEdit: React.FC<AddInfoSectionProps> = ({ errors, peopleData 
                 label="Início da Liberação"
                 value={field.value}
                 onChange={(newValue) => setValue('releasePeriodStart', newValue)}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    error={!!errors.releasePeriodStart}
-                    helperText={errors.releasePeriodStart?.message}
-                    fullWidth
-                  />
-                )}
+                slotProps={{
+                  textField: {
+                    error: !!errors.releasePeriodStart,
+                    helperText: String(errors.releasePeriodStart?.message || ''),
+                    fullWidth: true,
+                  },
+                }}
               />
             </LocalizationProvider>
           )}
@@ -83,21 +96,20 @@ const AddInfoSectionEdit: React.FC<AddInfoSectionProps> = ({ errors, peopleData 
                 label="Fim da Liberação"
                 value={field.value}
                 onChange={(newValue) => setValue('releasePeriodEnd', newValue)}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    error={!!errors.releasePeriodEnd}
-                    helperText={errors.releasePeriodEnd?.message}
-                    fullWidth
-                  />
-                )}
+                slotProps={{
+                  textField: {
+                    error: !!errors.releasePeriodEnd,
+                    helperText: String(errors.releasePeriodEnd?.message || ''),
+                    fullWidth: true,
+                  },
+                }}
               />
             </LocalizationProvider>
           )}
         />
       </Grid>
-      
-      {/* PROFISSIONAL */}
+
+      {/* Seção Profissional */}
       <Grid item xs={12}>
         <Typography variant="h6" gutterBottom>
           PROFISSIONAL
@@ -114,7 +126,7 @@ const AddInfoSectionEdit: React.FC<AddInfoSectionProps> = ({ errors, peopleData 
               label="Ocupação"
               fullWidth
               error={!!errors.occupation}
-              helperText={errors.occupation?.message}
+              helperText={String(errors.occupation?.message || '')}
             />
           )}
         />
@@ -130,145 +142,59 @@ const AddInfoSectionEdit: React.FC<AddInfoSectionProps> = ({ errors, peopleData 
                 label="Data de Admissão"
                 value={field.value}
                 onChange={(newValue) => setValue('admissionDate', newValue)}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    error={!!errors.admissionDate}
-                    helperText={errors.admissionDate?.message}
-                    fullWidth
-                  />
-                )}
+                slotProps={{
+                  textField: {
+                    error: !!errors.admissionDate,
+                    helperText: String(errors.admissionDate?.message || ''),
+                    fullWidth: true,
+                  },
+                }}
               />
             </LocalizationProvider>
           )}
         />
       </Grid>
-      <Grid item xs={12} md={6}>
-        <Controller
-          name="mobileNumber"
-          control={control}
-          defaultValue={defaultValues.mobileNumber}
-          render={({ field }) => (
-            <TextField
-              {...field}
-              label="Número de Celular"
-              fullWidth
-              error={!!errors.mobileNumber}
-              helperText={errors.mobileNumber?.message}
-            />
-          )}
-        />
-      </Grid>
-      <Grid item xs={12} md={6}>
-        <Controller
-          name="extensionNumber"
-          control={control}
-          defaultValue={defaultValues.extensionNumber}
-          render={({ field }) => (
-            <TextField
-              {...field}
-              label="Ramal"
-              fullWidth
-              error={!!errors.extensionNumber}
-              helperText={errors.extensionNumber?.message}
-            />
-          )}
-        />
-      </Grid>
-      
-      {/* PESSOAL */}
+
+      {/* Informações Pessoais */}
       <Grid item xs={12}>
         <Typography variant="h6" gutterBottom>
-          PESSOAL
+          INFORMAÇÕES PESSOAIS
         </Typography>
       </Grid>
-      <Grid item xs={12} md={6}>
-        <Controller
-          name="socialName"
-          control={control}
-          defaultValue={defaultValues.socialName}
-          render={({ field }) => (
-            <TextField
-              {...field}
-              label="Nome Social"
-              fullWidth
-              error={!!errors.socialName}
-              helperText={errors.socialName?.message}
-            />
-          )}
-        />
-      </Grid>
-      <Grid item xs={12} md={6}>
-        <Controller
-          name="registryName"
-          control={control}
-          defaultValue={defaultValues.registryName}
-          render={({ field }) => (
-            <TextField
-              {...field}
-              label="Nome de Registro"
-              fullWidth
-              error={!!errors.registryName}
-              helperText={errors.registryName?.message}
-            />
-          )}
-        />
-      </Grid>
-      <Grid item xs={12} md={6}>
-        <Controller
-          name="fatherName"
-          control={control}
-          defaultValue={defaultValues.fatherName}
-          render={({ field }) => (
-            <TextField
-              {...field}
-              label="Nome do Pai"
-              fullWidth
-              error={!!errors.fatherName}
-              helperText={errors.fatherName?.message}
-            />
-          )}
-        />
-      </Grid>
-      <Grid item xs={12} md={6}>
-        <Controller
-          name="motherName"
-          control={control}
-          defaultValue={defaultValues.motherName}
-          render={({ field }) => (
-            <TextField
-              {...field}
-              label="Nome da Mãe"
-              fullWidth
-              error={!!errors.motherName}
-              helperText={errors.motherName?.message}
-            />
-          )}
-        />
-      </Grid>
-      <Grid item xs={12} md={6}>
-        <Controller
-          name="birthDate"
-          control={control}
-          defaultValue={defaultValues.birthDate}
-          render={({ field }) => (
-            <LocalizationProvider dateAdapter={AdapterDateFns}>
-              <DatePicker
-                label="Data de Nascimento"
-                value={field.value}
-                onChange={(newValue) => setValue('birthDate', newValue)}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    error={!!errors.birthDate}
-                    helperText={errors.birthDate?.message}
-                    fullWidth
-                  />
-                )}
+      {[
+        { name: 'socialName', label: 'Nome Social' },
+        { name: 'registryName', label: 'Nome de Registro' },
+        { name: 'fatherName', label: 'Nome do Pai' },
+        { name: 'motherName', label: 'Nome da Mãe' },
+        { name: 'mobileNumber', label: 'Celular' },
+        { name: 'extensionNumber', label: 'Ramal' },
+        { name: 'cpf', label: 'CPF' },
+        { name: 'rg', label: 'RG' },
+        { name: 'passport', label: 'Passaporte' },
+      ].map(({ name, label }) => (
+        <Grid item xs={12} md={6} key={name}>
+          <Controller
+            name={name}
+            control={control}
+            defaultValue={defaultValues[name as keyof typeof defaultValues]}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label={label}
+                fullWidth
+                error={!!errors[name as keyof typeof errors]}
+                helperText={String(errors[name as keyof typeof errors]?.message || '')}
               />
-            </LocalizationProvider>
-          )}
-        />
+            )}
+          />
+        </Grid>
+      ))}
+
+      {/* Dados Adicionais */}
+      <Grid item xs={12}>
+        <Typography variant="h6" gutterBottom>
+          DADOS ADICIONAIS
+        </Typography>
       </Grid>
       <Grid item xs={12} md={6}>
         <Controller
@@ -278,11 +204,11 @@ const AddInfoSectionEdit: React.FC<AddInfoSectionProps> = ({ errors, peopleData 
           render={({ field }) => (
             <TextField
               {...field}
-              select
               label="Gênero"
+              select
               fullWidth
               error={!!errors.gender}
-              helperText={errors.gender?.message}
+              helperText={String(errors.gender?.message || '')}
             >
               <MenuItem value="male">Masculino</MenuItem>
               <MenuItem value="female">Feminino</MenuItem>
@@ -299,17 +225,11 @@ const AddInfoSectionEdit: React.FC<AddInfoSectionProps> = ({ errors, peopleData 
           render={({ field }) => (
             <TextField
               {...field}
-              select
               label="Estado Civil"
               fullWidth
               error={!!errors.maritalStatus}
-              helperText={errors.maritalStatus?.message}
-            >
-              <MenuItem value="single">Solteiro(a)</MenuItem>
-              <MenuItem value="married">Casado(a)</MenuItem>
-              <MenuItem value="divorced">Divorciado(a)</MenuItem>
-              <MenuItem value="widowed">Viúvo(a)</MenuItem>
-            </TextField>
+              helperText={String(errors.maritalStatus?.message || '')}
+            />
           )}
         />
       </Grid>
@@ -324,7 +244,7 @@ const AddInfoSectionEdit: React.FC<AddInfoSectionProps> = ({ errors, peopleData 
               label="Nacionalidade"
               fullWidth
               error={!!errors.nationality}
-              helperText={errors.nationality?.message}
+              helperText={String(errors.nationality?.message || '')}
             />
           )}
         />
@@ -340,55 +260,7 @@ const AddInfoSectionEdit: React.FC<AddInfoSectionProps> = ({ errors, peopleData 
               label="Naturalidade"
               fullWidth
               error={!!errors.naturalness}
-              helperText={errors.naturalness?.message}
-            />
-          )}
-        />
-      </Grid>
-      <Grid item xs={12} md={6}>
-        <Controller
-          name="rg"
-          control={control}
-          defaultValue={defaultValues.rg}
-          render={({ field }) => (
-            <TextField
-              {...field}
-              label="RG"
-              fullWidth
-              error={!!errors.rg}
-              helperText={errors.rg?.message}
-            />
-          )}
-        />
-      </Grid>
-      <Grid item xs={12} md={6}>
-        <Controller
-          name="cpf"
-          control={control}
-          defaultValue={defaultValues.cpf}
-          render={({ field }) => (
-            <TextField
-              {...field}
-              label="CPF"
-              fullWidth
-              error={!!errors.cpf}
-              helperText={errors.cpf?.message}
-            />
-          )}
-        />
-      </Grid>
-      <Grid item xs={12} md={6}>
-        <Controller
-          name="passport"
-          control={control}
-          defaultValue={defaultValues.passport}
-          render={({ field }) => (
-            <TextField
-              {...field}
-              label="Passaporte"
-              fullWidth
-              error={!!errors.passport}
-              helperText={errors.passport?.message}
+              helperText={String(errors.naturalness?.message || '')}
             />
           )}
         />

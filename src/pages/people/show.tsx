@@ -14,10 +14,10 @@ import {
     Divider
   } from "@mui/material";
   import { Person as PersonIcon } from "@mui/icons-material";
-import GeralSectionShow from "@components/GeralSectionShow";
-import AddInfoSectionShow from "@components/AddInfoSectionShow";
-import DocumentSectionShow from "@components/DocumentSectionShow";
-import GroupSectionShow from "@components/GroupSectionShow";
+import GeralSectionShow from "../../components/GeralSectionShow";
+import AddInfoSectionShow from "../../components/AddInfoSectionShow";
+import DocumentSectionShow from "../../components/DocumentSectionShow";
+import GroupSectionShow from "../../components/GroupSectionShow";
 
 export const PersonShow: React.FC = () => {
     const translate = useTranslate();
