@@ -3,6 +3,34 @@ import { useForm } from "@refinedev/react-hook-form";
 import { Edit, useAutocomplete } from "@refinedev/mui";
 import { Box, TextField, Autocomplete, Chip } from "@mui/material";
 import { Controller } from "react-hook-form";
+import { HttpError } from "@refinedev/core";
+
+// Interfaces
+interface IGroupForm {
+  description: string;
+  person_id: number[];
+}
+
+interface IPerson {
+  id: number;
+  name: string;
+}
+
+// Função auxiliar segura para processar IDs
+const processPersonIds = (rawIds: any): number[] => {
+  if (!rawIds) return [];
+  
+  const idsArray = Array.isArray(rawIds) ? rawIds : [rawIds];
+  return idsArray
+    .filter(Boolean)
+    .map(item => {
+      if (typeof item === 'object' && item !== null) {
+        return item.id;
+      }
+      return Number(item);
+    })
+    .filter(id => !isNaN(id));
+};
 
 export const GroupEdit: React.FC = () => {
   const {
@@ -12,13 +40,18 @@ export const GroupEdit: React.FC = () => {
     control,
     formState: { errors },
     setValue,
-  } = useForm();
+  } = useForm<IGroupForm, HttpError>();
 
   const groupData = queryResult?.data?.data;
 
-  const { autocompleteProps } = useAutocomplete({
+  // Usando a função auxiliar
+  const currentPersonIds = React.useMemo(() => {
+    return processPersonIds(groupData?.person_id);
+  }, [groupData]);
+
+  const { autocompleteProps } = useAutocomplete<IPerson>({
     resource: "people",
-    defaultValue: groupData?.pessoasGrupo,
+    defaultValue: currentPersonIds,
     onSearch: (value) => [
       {
         field: "name",
@@ -31,9 +64,9 @@ export const GroupEdit: React.FC = () => {
   React.useEffect(() => {
     if (groupData) {
       setValue("description", groupData.description);
-      setValue("pessoasGrupo", groupData.pessoasGrupo || []);
+      setValue("person_id", currentPersonIds);
     }
-  }, [groupData, setValue]);
+  }, [groupData, setValue, currentPersonIds]);
 
   return (
     <Edit saveButtonProps={saveButtonProps}>
@@ -47,43 +80,42 @@ export const GroupEdit: React.FC = () => {
             required: "Este campo é obrigatório",
           })}
           error={!!errors.description}
-          helperText={errors.description?.message}
+          helperText={errors.description?.message?.toString() || ""}
           margin="normal"
           fullWidth
           label="Descrição do Grupo"
           name="description"
-          InputLabelProps={{ shrink: true }}
         />
+        
         <Controller
           control={control}
-          name="pessoasGrupo"
+          name="person_id"
           defaultValue={[]}
           render={({ field }) => (
-            <Autocomplete
+            <Autocomplete<IPerson, true>
               {...autocompleteProps}
-              {...field}
               multiple
-              disablePortal
-              options={autocompleteProps.options || []}
-              onChange={(_, value) => {
-                field.onChange(value);
+              options={autocompleteProps?.options || []}
+              value={
+                (autocompleteProps?.options || [])
+                  .filter(option => field.value?.includes(option.id))
+              }
+              onChange={(_, newValue) => {
+                field.onChange(newValue.map(item => item.id));
               }}
-              getOptionLabel={(option) => option.name || ""}
-              isOptionEqualToValue={(option, value) => option.id === value.id}
+              getOptionLabel={(option: IPerson) => option.name}
               renderInput={(params) => (
                 <TextField
                   {...params}
                   label="Pessoas"
                   margin="normal"
                   variant="outlined"
-                  error={!!errors.pessoasGrupo}
-                  helperText={errors.pessoasGrupo?.message}
-                  required
-                  InputLabelProps={{ shrink: true }}
+                  error={!!errors.person_id}
+                  helperText={errors.person_id?.message?.toString() || ""}
                 />
               )}
-              renderTags={(value, getTagProps) =>
-                value.map((option: any, index: number) => (
+              renderTags={(tagValue, getTagProps) =>
+                tagValue.map((option, index) => (
                   <Chip
                     {...getTagProps({ index })}
                     key={option.id}

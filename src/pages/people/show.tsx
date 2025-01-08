@@ -7,21 +7,54 @@ import {
     Grid, 
     Tab, 
     Tabs, 
-    Paper, 
     Card, 
     CardContent, 
-    Avatar,
-    Divider
-  } from "@mui/material";
-  import { Person as PersonIcon } from "@mui/icons-material";
+    Avatar
+} from "@mui/material";
+import { Person as PersonIcon } from "@mui/icons-material";
 import GeralSectionShow from "../../components/GeralSectionShow";
 import AddInfoSectionShow from "../../components/AddInfoSectionShow";
 import DocumentSectionShow from "../../components/DocumentSectionShow";
 import GroupSectionShow from "../../components/GroupSectionShow";
 
+// Atualize a interface PersonData para incluir as propriedades de documento
+interface PersonData {
+    id?: string;
+    name?: string;
+    email?: string;
+    registration?: string;
+    phoneNumber?: string;
+    notes?: string;
+    personPhoto?: string;
+    birthDate?: string;
+    gender?: string;
+    iDSecureAccess?: boolean;
+    blockList?: boolean;
+    deviceAdmin?: boolean;
+    accessProfile?: string;
+    releasePeriodStart?: string;
+    releasePeriodEnd?: string;
+    occupation?: string;
+    admissionDate?: string;
+    mobileNumber?: string;
+    extensionNumber?: string;
+    socialName?: string;
+    registryName?: string;
+    groups?: any[];
+    // Adicione as propriedades de documento
+    cpf_number?: string;
+    cpf_date?: string;
+    cpf_file?: string;
+    cpf_file_name?: string;
+    rg_number?: string;
+    rg_date?: string;
+    rg_file?: string;
+    rg_file_name?: string;
+}
+
 export const PersonShow: React.FC = () => {
     const translate = useTranslate();
-    const { queryResult } = useShow();
+    const { queryResult } = useShow<PersonData>();
     const { data, isLoading } = queryResult;
     const [tabValue, setTabValue] = React.useState(0);
 
@@ -95,15 +128,15 @@ export const PersonShow: React.FC = () => {
 
                     <Box sx={{ mt: 3 }}>
                         <TabPanel value={tabValue} index={0}>
-                            <GeralSectionShow data={record} />
+                            <GeralSectionShow data={record as PersonData} />
                         </TabPanel>
 
                         <TabPanel value={tabValue} index={1}>
-                            <AddInfoSectionShow data={record} />
+                            <AddInfoSectionShow data={record as PersonData} />
                         </TabPanel>
 
                         <TabPanel value={tabValue} index={2}>
-                            <DocumentSectionShow documents={record} />
+                            <DocumentSectionShow documents={record as PersonData} />
                         </TabPanel>
 
                         <TabPanel value={tabValue} index={3}>
@@ -137,3 +170,4 @@ const TabPanel: React.FC<{ children?: React.ReactNode; value: number; index: num
 };
 
 export default PersonShow;
+

@@ -3,6 +3,8 @@ import { Create, useAutocomplete } from "@refinedev/mui";
 import { useForm } from "@refinedev/react-hook-form";
 import { Controller } from "react-hook-form";
 
+//helperText={errors.field?.message?.toString() || ""}
+
 export const VisitorCreate = () => {
   const {
     saveButtonProps,
@@ -22,7 +24,8 @@ export const VisitorCreate = () => {
         <TextField
 
           error={!!errors.personType}
-          helperText={errors.personType?.message}
+//          helperText={errors.personType?.message}
+          helperText={errors.field?.message?.toString() || ""}
           margin="normal"
           fullWidth
           InputLabelProps={{ shrink: true }}
@@ -35,7 +38,8 @@ export const VisitorCreate = () => {
             required: "This field is required",
           })}
           error={!!errors.name}
-          helperText={errors.name?.message}
+//          helperText={errors.name?.message}
+          helperText={errors.field?.message?.toString() || ""}
           margin="normal"
           fullWidth
           InputLabelProps={{ shrink: true }}
@@ -46,7 +50,8 @@ export const VisitorCreate = () => {
         <TextField
 
           error={!!errors.registration}
-          helperText={errors.registration?.message}
+//          helperText={errors.registration?.message}
+          helperText={errors.field?.message?.toString() || ""}
           margin="normal"
           fullWidth
           InputLabelProps={{ shrink: true }}

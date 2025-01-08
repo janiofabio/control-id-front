@@ -24,26 +24,27 @@ export const GroupList = () => {
 
     const { data: groupData, isLoading: groupIsLoading } = useMany({
         resource: "groups",
-        ids: dataGridProps?.rows?.map((item: any) => item?.groupID) ?? [],
+        ids: (dataGridProps?.rows?.map((item: any) => item?.groupID) ?? []).filter(Boolean),
         queryOptions: {
-            enabled: !!dataGridProps?.rows,
+            enabled: !!dataGridProps?.rows?.length,
         },
     });
-
+    
     const columns = React.useMemo<GridColDef[]>(
         () => [
             {
                 field: "id",
-                headerName: translate("groups.fields.id"),
+                headerName: "id", //translate("groups.fields.id"),
                 type: "number",
                 minWidth: 50,
             },
             {
                 field: "description",
                 flex: 1,
-                headerName: translate("groups.fields.description"),
+                headerName: "description", //translate("groups.fields.description"),
                 minWidth: 200,
             },
+/*            
             {
                 field: "type",
                 flex: 1,
@@ -124,9 +125,10 @@ export const GroupList = () => {
                     return <DateField value={value} />;
                 },
             },
+*/            
             {
                 field: "actions",
-                headerName: translate("table.actions"),
+                headerName: "actions", //translate("table.actions"),
                 sortable: false,
                 renderCell: function render({ row }) {
                     return (

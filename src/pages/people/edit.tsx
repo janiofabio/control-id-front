@@ -3,7 +3,7 @@ import { useTranslate } from "@refinedev/core";
 import { Edit } from "@refinedev/mui";
 import { Button, TextField, Box, Grid, Typography, IconButton, Tab, Tabs, useTheme } from "@mui/material";
 import { useForm } from "@refinedev/react-hook-form";
-import { FormProvider } from 'react-hook-form';
+import { FormProvider, FieldErrors, FieldValues } from 'react-hook-form';
 import GeralSectionEdit from "../../components/GeralSectionEdit";
 import AddInfoSectionEdit from "../../components/AddInfoSectionEdit";
 import DocumentSectionEdit from "../../components/DocumentSectionEdit";
@@ -11,6 +11,38 @@ import GroupSectionEdit from "../../components/GroupSectionEdit";
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
+
+// Definindo a interface PersonData para tipar corretamente os dados da pessoa
+interface PersonData {
+    id?: string;
+    name?: string;
+    email?: string;
+    registration?: string;
+    phoneNumber?: string;
+    notes?: string;
+    personPhoto?: string;
+    birthDate?: string;
+    gender?: string;
+    iDSecureAccess?: boolean;
+    blockList?: boolean;
+    deviceAdmin?: boolean;
+    accessProfile?: string;
+    releasePeriodStart?: string;
+    releasePeriodEnd?: string;
+    occupation?: string;
+    admissionDate?: string;
+    mobileNumber?: string;
+  }
+ 
+// Definindo as props para os componentes de seção
+interface SectionEditProps {
+    errors: FieldErrors<FieldValues>;
+    peopleData: PersonData;
+}
+
+// Atualize as interfaces para incluir a propriedade 'errors'
+interface DocumentSectionEditProps extends SectionEditProps {}
+interface GroupSectionEditProps extends SectionEditProps {}
 
 export const PersonEdit = () => {
     const translate = useTranslate();
@@ -27,7 +59,8 @@ export const PersonEdit = () => {
 
     const theme = useTheme();
     const { saveButtonProps, refineCore: { queryResult } } = methods;
-    const peopleData = queryResult?.data?.data;
+    //const peopleData = queryResult?.data?.data;
+    const peopleData = queryResult?.data?.data as PersonData;
 
     const [tabValue, setTabValue] = useState(0);
     const [preview, setPreview] = useState<string>(peopleData?.personPhoto || ""); // Exibe foto gravada
@@ -55,7 +88,7 @@ export const PersonEdit = () => {
             reader.readAsDataURL(file);
         }
     };
-
+    
     return (
         <FormProvider {...methods}>
             <Edit saveButtonProps={saveButtonProps}>
@@ -108,7 +141,9 @@ export const PersonEdit = () => {
                                             required: "This field is required",
                                         })}
                                         error={!!errors.name}
-                                        helperText={errors.name?.message}
+                                        // mensagens de erro para string
+                                        helperText={errors.field?.message?.toString() || ""}
+                                        //helperText={errors.name?.message}
                                         margin="normal"
                                         fullWidth
                                         InputLabelProps={{ shrink: true }}
@@ -122,7 +157,9 @@ export const PersonEdit = () => {
                                             required: "This field is required",
                                         })}
                                         error={!!errors.email}
-                                        helperText={errors.email?.message}
+                                        //helperText={errors.email?.message}
+                                        // Solução: Converter para string
+                                        helperText={errors.field?.message?.toString() || ""}
                                         margin="normal"
                                         fullWidth
                                         InputLabelProps={{ shrink: true }}
@@ -202,21 +239,23 @@ export const PersonEdit = () => {
 
                         <TabPanel value={tabValue} index={1}>
                             <AddInfoSectionEdit 
-                                errors={methods.formState.errors} 
+                                errors={errors} 
                                 peopleData={peopleData} 
                             />
                         </TabPanel>
 
                         <TabPanel value={tabValue} index={2}>
                             <DocumentSectionEdit 
-                                errors={methods.formState.errors} 
-                                peopleData={peopleData} 
+                                // errors={errors} 
+                                 peopleData={peopleData} 
                             />
                        </TabPanel>
 
                         <TabPanel value={tabValue} index={3}>
                             <GroupSectionEdit 
-                                errors={methods.formState.errors} 
+                                //errors={methods.formState.errors} 
+                                //peopleData={peopleData} 
+                                //errors={errors} 
                                 peopleData={peopleData} 
                             />
                         </TabPanel>

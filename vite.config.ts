@@ -15,6 +15,7 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
+      '@': path.resolve(__dirname, './src'),
       '@refinedev/inferencer/mui': path.resolve(__dirname, 'node_modules/@refinedev/inferencer/dist/mui'),
       '@components': path.resolve(__dirname, 'src/components'),
       '@pages': path.resolve(__dirname, 'src/pages'),

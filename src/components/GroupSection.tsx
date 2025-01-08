@@ -1,83 +1,57 @@
-import React, { useState, useEffect, useMemo } from "react";
-import { Autocomplete, TextField, Box, Chip } from "@mui/material";
+import React from "react";
+import { Autocomplete, TextField, Box } from "@mui/material";
 import { useFormContext, Controller } from "react-hook-form";
-import { fetchGroups } from "../services/groupService";
+import { useAutocomplete } from "@refinedev/mui";
 
 interface Group {
   id: number;
-  attributes: {
-    description: string;
-  };
+  description: string;
 }
 
-const GroupSection = () => {
-    const { control } = useFormContext();
-    const [allGroups, setAllGroups] = useState<Group[]>([]);
+const GroupSection: React.FC = () => {
+  const { control } = useFormContext();
 
-    useEffect(() => {
-        const loadGroups = async () => {
-            try {
-                const data = await fetchGroups();
-                if (data && data.length > 0) {
-                    setAllGroups(data);
-                    console.log("Grupos carregados da API:", data);
-                }
-            } catch (error) {
-                console.error("Erro ao carregar os grupos:", error);
-            }
-        };
-        loadGroups();
-    }, []);
+  const { autocompleteProps } = useAutocomplete<Group>({
+    resource: "groups",
+    defaultValue: [],
+    onSearch: (value) => [
+      {
+        field: "description",
+        operator: "contains",
+        value,
+      },
+    ],
+  });
 
-    const groupOptions = useMemo(() => 
-        allGroups.map(group => group.attributes.description),
-        [allGroups]
-    );
-
-    return (
-        <Box sx={{ p: 2 }}>
-            <Controller
-                name="groups"
-                control={control}
-                defaultValue={[]}
-                render={({ field: { onChange, value } }) => (
-                    <Autocomplete
-                        multiple
-                        options={groupOptions}
-                        value={value}
-                        onChange={(_, newValue) => {
-                            // Remove duplicatas
-                            const uniqueGroups = Array.from(new Set(newValue));
-                            onChange(uniqueGroups);
-                            console.log("Grupos selecionados:", uniqueGroups);
-                        }}
-                        renderInput={(params) => (
-                            <TextField
-                                {...params}
-                                label="Grupos"
-                                placeholder="Selecione ou digite para buscar"
-                                variant="outlined"
-                            />
-                        )}
-                        renderTags={(tagValue, getTagProps) =>
-                            tagValue.map((option, index) => (
-                                <Chip
-                                    label={option}
-                                    {...getTagProps({ index })}
-                                    key={option}
-                                />
-                            ))
-                        }
-                        renderOption={(props, option) => (
-                            <li {...props} key={option}>
-                                {option}
-                            </li>
-                        )}
-                    />
-                )}
-            />
-        </Box>
-    );
+  return (
+    <Box sx={{ p: 2 }}>
+      <Controller
+        name="groups"
+        control={control}
+        defaultValue={[]}
+        render={({ field: { onChange, value } }) => (
+          <Autocomplete
+            {...autocompleteProps}
+            multiple
+            value={value || []}
+            onChange={(_, newValue) => {
+              onChange(newValue);
+            }}
+            getOptionLabel={(item) => item.description}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Grupos"
+                placeholder="Selecione os grupos"
+                variant="outlined"
+              />
+            )}
+          />
+        )}
+      />
+    </Box>
+  );
 };
 
 export default GroupSection;
+
